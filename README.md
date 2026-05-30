@@ -1,4 +1,4 @@
-# Quantum Hardware Performance Intelligence Pipeline
+# Quantum Hardware Performance Intelligence Pipeline (in-progress)
 
 > End-to-end data engineering pipeline for quantum device telemetry ingestion, calibration drift detection, and hardware reliability analytics — built to mirror IBM Quantum's production observability stack.
 
