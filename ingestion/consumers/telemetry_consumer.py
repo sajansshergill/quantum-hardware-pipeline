@@ -10,7 +10,6 @@ Adds physical constraint validation on top of schema validation:
 
 import json
 import logging
-import os
 import sys
 from pathlib import Path
 from typing import Any, Dict
@@ -40,7 +39,7 @@ PYARROW_SCHEMA = pa.schema([
 
 
 class TelemetryConsumer(BaseConsumer):
-    def __init__(self):
+    def __init__(self, bronze_root=None, bootstrap_servers=None):
         schema = json.loads(SCHEMA_PATH.read_text())
         super().__init__(
             topic_key="telemetry",
@@ -48,6 +47,8 @@ class TelemetryConsumer(BaseConsumer):
             group_id="qpu-telemetry-bronze-consumer",
             schema=schema,
             pyarrow_schema=PYARROW_SCHEMA,
+            bronze_root=bronze_root,
+            bootstrap_servers=bootstrap_servers,
         )
 
     def validate(self, record: Dict[str, Any]) -> bool:
@@ -59,6 +60,12 @@ class TelemetryConsumer(BaseConsumer):
                 "Physical violation T2 > 2*T1 on device=%s qubit=%s (T1=%.2f T2=%.2f)",
                 record.get("device_id"), record.get("qubit_id"),
                 record.get("T1_us"), record.get("T2_us"),
+            )
+            return False
+        if record.get("gate_error_2q", 0) < record.get("gate_error_1q", 0):
+            logger.warning(
+                "Physical violation gate_error_2q < gate_error_1q on device=%s qubit=%s",
+                record.get("device_id"), record.get("qubit_id"),
             )
             return False
         return True

@@ -57,14 +57,17 @@ def _sample_qubit_metrics(device: QPUDevice, qubit_id: int) -> dict:
     T1 = noisy(device.baseline_T1_us, 10.0, 500.0)
     T2 = noisy(device.baseline_T2_us, 5.0, 2 * T1)
 
+    gate_error_1q = round(noisy(device.baseline_gate_error_1q, 1e-5, 0.05), 6)
+    gate_error_2q = round(max(gate_error_1q, noisy(device.baseline_gate_error_2q, 1e-4, 0.15)), 6)
+
     return {
         "event_id":         str(uuid.uuid4()),
         "device_id":        device.device_id,
         "qubit_id":         qubit_id,
         "T1_us":            round(T1, 3),
         "T2_us":            round(T2, 3),
-        "gate_error_1q":    round(noisy(device.baseline_gate_error_1q, 1e-5, 0.05), 6),
-        "gate_error_2q":    round(noisy(device.baseline_gate_error_2q, 1e-4, 0.15), 6),
+        "gate_error_1q":    gate_error_1q,
+        "gate_error_2q":    gate_error_2q,
         "readout_fidelity": round(noisy(device.baseline_readout_fidelity, 0.5, 1.0), 5),
         "timestamp":        datetime.now(timezone.utc).isoformat(),
     }

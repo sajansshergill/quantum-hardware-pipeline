@@ -1,1 +1,8 @@
-
+quantum_hardware_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', 'data/lakehouse/qpu_pipeline.duckdb') }}"
+      schema: main
+      threads: 4

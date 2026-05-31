@@ -1,1 +1,30 @@
-
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QPU Calibration Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "device_id",
+    "triggered_by",
+    "duration_seconds",
+    "qubits_total",
+    "qubits_calibrated",
+    "pre_cal_drift_flag",
+    "status",
+    "backend_version",
+    "timestamp"
+  ],
+  "properties": {
+    "run_id": {"type": "string", "format": "uuid"},
+    "device_id": {"type": "string", "minLength": 1},
+    "triggered_by": {"type": "string", "enum": ["scheduled", "manual", "drift_alert"]},
+    "duration_seconds": {"type": "number", "minimum": 60.0, "maximum": 3600.0},
+    "qubits_total": {"type": "integer", "minimum": 1},
+    "qubits_calibrated": {"type": "integer", "minimum": 0},
+    "pre_cal_drift_flag": {"type": "boolean"},
+    "status": {"type": "string", "enum": ["success", "partial", "failed"]},
+    "backend_version": {"type": "string", "minLength": 1},
+    "timestamp": {"type": "string", "format": "date-time"}
+  }
+}

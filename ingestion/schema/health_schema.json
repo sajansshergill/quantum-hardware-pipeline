@@ -1,1 +1,33 @@
-
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QPU System Health Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "device_id",
+    "cryo_temp_mk",
+    "cryo_temp_stable",
+    "control_elec_status",
+    "network_latency_ms",
+    "network_status",
+    "system_health_score",
+    "active_alerts",
+    "timestamp"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "device_id": {"type": "string", "minLength": 1},
+    "cryo_temp_mk": {"type": "number", "minimum": 5.0, "maximum": 100.0},
+    "cryo_temp_stable": {"type": "boolean"},
+    "control_elec_status": {"type": "string", "enum": ["nominal", "degraded", "fault"]},
+    "network_latency_ms": {"type": "number", "minimum": 0.0},
+    "network_status": {"type": "string", "enum": ["ok", "degraded", "down"]},
+    "system_health_score": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "active_alerts": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "timestamp": {"type": "string", "format": "date-time"}
+  }
+}

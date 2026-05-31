@@ -1,1 +1,25 @@
+name: quantum_hardware_pipeline
+version: "1.0.0"
+config-version: 2
 
+profile: quantum_hardware_pipeline
+
+model-paths: ["models"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  bronze_root: "{{ env_var('BRONZE_ROOT', 'data/bronze') }}"
+
+models:
+  quantum_hardware_pipeline:
+    bronze:
+      +schema: bronze
+      +materialized: view
+    silver:
+      +schema: silver
+      +materialized: table
+    gold:
+      +schema: gold
+      +materialized: table

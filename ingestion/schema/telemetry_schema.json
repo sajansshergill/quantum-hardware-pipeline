@@ -1,1 +1,28 @@
-
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QPU Telemetry Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "device_id",
+    "qubit_id",
+    "T1_us",
+    "T2_us",
+    "gate_error_1q",
+    "gate_error_2q",
+    "readout_fidelity",
+    "timestamp"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "device_id": {"type": "string", "minLength": 1},
+    "qubit_id": {"type": "integer", "minimum": 0},
+    "T1_us": {"type": "number", "minimum": 10.0, "maximum": 500.0},
+    "T2_us": {"type": "number", "minimum": 5.0, "maximum": 1000.0},
+    "gate_error_1q": {"type": "number", "minimum": 0.0, "maximum": 0.05},
+    "gate_error_2q": {"type": "number", "minimum": 0.0, "maximum": 0.15},
+    "readout_fidelity": {"type": "number", "minimum": 0.5, "maximum": 1.0},
+    "timestamp": {"type": "string", "format": "date-time"}
+  }
+}
