@@ -39,6 +39,8 @@ make dashboard
 
 The `make sample` path generates bronze Parquet directly without Kafka, which is the fastest way to review the end-to-end medallion and dashboard flow.
 
+Install dbt/test dependencies with `make install-dev` when running local dbt models or pytest. `requirements.txt` is kept Streamlit-only so the hosted app does not install the dbt CLI stack.
+
 ## Streamlit Cloud Deploy
 
 Use these settings in Streamlit Community Cloud:
@@ -46,7 +48,6 @@ Use these settings in Streamlit Community Cloud:
 - Repository: `sajansshergill/quantum-hardware-pipeline`
 - Branch: `main`
 - Main file path: `dashboard/app.py`
-- Python version: `runtime.txt`
 
 The deployed app bootstraps demo data automatically on first load because generated `data/` artifacts are not committed to Git.
 
