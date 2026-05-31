@@ -4,11 +4,15 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 
 import duckdb
 import pandas as pd
 import streamlit as st
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 DUCKDB_PATH = Path(os.getenv("DUCKDB_PATH", "data/lakehouse/qpu_pipeline.duckdb"))
 ALERTS_PATH = Path(os.getenv("DRIFT_ALERTS_PATH", "data/alerts/drift_alerts.json"))
@@ -47,11 +51,31 @@ def load_alerts() -> pd.DataFrame:
     return pd.DataFrame(json.loads(ALERTS_PATH.read_text()))
 
 
+@st.cache_resource(show_spinner=False)
+def ensure_demo_database() -> str | None:
+    """Build demo data automatically for Streamlit Cloud deployments."""
+    if DUCKDB_PATH.exists():
+        return None
+    if os.getenv("AUTO_BOOTSTRAP_SAMPLE", "true").lower() not in {"1", "true", "yes"}:
+        return "No DuckDB database found yet. Run `make sample && make dbt` first."
+
+    try:
+        from scripts.build_demo_data import build_demo_data
+
+        build_demo_data(run_dbt_tests=False)
+    except Exception as exc:
+        return f"Could not bootstrap demo data automatically: {exc}"
+    return None
+
+
 st.set_page_config(page_title="QPU Reliability Dashboard", layout="wide")
 st.title("Quantum Hardware Performance Intelligence")
 
-if not DUCKDB_PATH.exists():
-    st.info("No DuckDB database found yet. Run `make sample && make dbt` first.")
+with st.spinner("Preparing demo data..."):
+    bootstrap_error = ensure_demo_database()
+
+if bootstrap_error:
+    st.info(bootstrap_error)
     st.stop()
 
 mart = relation("device_reliability_mart")
@@ -72,7 +96,7 @@ col3.metric("Min Readout Fidelity", f"{latest['min_readout_fidelity'].min():.4f}
 col4.metric("Job SLA", f"{latest['job_sla_pct'].mean():.1f}%")
 
 st.subheader("Device Reliability Mart")
-st.dataframe(mart_df, use_container_width=True)
+st.dataframe(mart_df, width="stretch")
 
 tab1, tab2, tab3, tab4 = st.tabs(["Telemetry", "Jobs", "Health", "Drift Alerts"])
 
@@ -99,7 +123,7 @@ with tab2:
         order by 1, 2
         """
     )
-    st.dataframe(jobs_df, use_container_width=True)
+    st.dataframe(jobs_df, width="stretch")
 
 with tab3:
     health_df = query(
@@ -111,11 +135,11 @@ with tab3:
         limit 500
         """
     )
-    st.dataframe(health_df, use_container_width=True)
+    st.dataframe(health_df, width="stretch")
 
 with tab4:
     alerts = load_alerts()
     if alerts.empty:
         st.info("No drift alerts written yet. Run `python detection/drift_detector.py` after dbt.")
     else:
-        st.dataframe(alerts, use_container_width=True)
+        st.dataframe(alerts, width="stretch")

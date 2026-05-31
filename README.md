@@ -39,6 +39,17 @@ make dashboard
 
 The `make sample` path generates bronze Parquet directly without Kafka, which is the fastest way to review the end-to-end medallion and dashboard flow.
 
+## Streamlit Cloud Deploy
+
+Use these settings in Streamlit Community Cloud:
+
+- Repository: `sajansshergill/quantum-hardware-pipeline`
+- Branch: `main`
+- Main file path: `dashboard/app.py`
+- Python version: `runtime.txt`
+
+The deployed app bootstraps demo data automatically on first load because generated `data/` artifacts are not committed to Git.
+
 ## Kafka Demo
 
 ```bash
