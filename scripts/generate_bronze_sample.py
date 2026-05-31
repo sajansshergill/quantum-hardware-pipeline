@@ -27,11 +27,12 @@ def _records(batch):
 def main() -> None:
     (ROOT / "data" / "lakehouse").mkdir(parents=True, exist_ok=True)
     (ROOT / "data" / "alerts").mkdir(parents=True, exist_ok=True)
+    bronze_root = ROOT / "data" / "bronze"
     consumers_and_records = [
-        (TelemetryConsumer(), _records(generate_telemetry_batch())),
-        (CalibrationConsumer(), _records(generate_calibration_batch())),
-        (JobsConsumer(), _records(generate_jobs_batch(jobs_per_device=8))),
-        (HealthConsumer(), _records(generate_health_batch())),
+        (TelemetryConsumer(bronze_root=bronze_root), _records(generate_telemetry_batch())),
+        (CalibrationConsumer(bronze_root=bronze_root), _records(generate_calibration_batch())),
+        (JobsConsumer(bronze_root=bronze_root), _records(generate_jobs_batch(jobs_per_device=8))),
+        (HealthConsumer(bronze_root=bronze_root), _records(generate_health_batch())),
     ]
 
     total = 0
